@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>One Day RP</title>
+    <!-- مكتبة الجرافيكس ثلاثي الأبعاد 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; -webkit-touch-callout: none; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; }
+
+        /* شاشة تسجيل الدخول */
+        #auth-screen {
+            position: absolute; width: 100%; height: 100%; z-index: 100;
+            background: linear-gradient(rgba(10, 15, 29, 0.85), rgba(10, 15, 29, 0.95)),
+                        url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1920&auto=format&fit=crop') center/cover;
+            display: flex; align-items: center; justify-content: center; color: #fff;
+        }
+        .auth-card {
+            background: rgba(18, 24, 43, 0.92); border: 1px solid rgba(255, 75, 43, 0.3);
+            border-radius: 20px; width: 90%; max-width: 440px; padding: 25px; text-align: center;
+        }
+        .logo { font-size: 26px; font-weight: 900; color: #ff4b2b; letter-spacing: 2px; }
+        .servers-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
+        .server-btn {
+            background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 8px 4px; color: #fff; cursor: pointer; font-size: 13px; font-weight: bold;
+        }
+        .server-btn.active { border-color: #ff4b2b; background: rgba(255,75,43,0.2); }
+        .auth-input {
+            width: 100%; padding: 12px; margin-bottom: 12px; background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; outline: none; font-size: 14px;
+        }
+        .btn-play {
+            width: 100%; padding: 14px; background: linear-gradient(45deg, #ff4b2b, #ff416c);
+            border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+
+        /* واجهة اللعب HUD (الهاتف) */
+        #game-ui { display: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
+        
+        /* الخريطة المصغرة وأشرطة الصحة (أعلى اليسار) */
+        .hud-left { position: absolute; top: 15px; left: 15px; pointer-events: auto; }
+        .minimap {
+            width: 90px; height: 90px; border-radius: 50%; border: 2px solid #fff;
+            background: rgba(15, 23, 42, 0.85); box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center; font-size: 10px; color: #00ff88; font-weight: bold;
+        }
+        .bars-container { width: 90px; margin-top: 6px; }
+        .bar { height: 6px; border-radius: 3px; margin-bottom: 3px; background: rgba(0,0,0,0.5); }
+        .bar-fill-hp { width: 100%; height: 100%; background: #ef4444; border-radius: 3px; }
+        .bar-fill-armor { width: 80%; height: 100%; background: #3b82f6; border-radius: 3px; }
+
+        /* الكاش والبنك والـ ID (أعلى اليمين) */
+        .hud-right { position: absolute; top: 15px; right: 15px; text-align: right; }
+        .money-badge { font-size: 16px; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .cash { color: #10b981; }
+        .bank { color: #60a5fa; font-size: 14px; }
+        .player-id { font-size: 11px; color: #cbd5e1; }
+
+        /* عصا التحكم باللمس Joystick (أسفل اليسار) */
+        #joystick-zone {
+            position: absolute; bottom: 25px; left: 25px; width: 120px; height: 120px;
+            background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%; pointer-events: auto; touch-action: none;
+        }
+        #joystick-handle {
+            position: absolute; top: 35px; left: 35px; width: 50px; height: 50px;
+            background: radial-gradient(circle, #ff4b2b, #ff416c); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255,75,43,0.6); pointer-events: none;
+        }
+
+        /* أزرار الأكشن (أسفل اليمين) */
+        .actions-zone { position: absolute; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: auto;
