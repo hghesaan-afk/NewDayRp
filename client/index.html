@@ -4,334 +4,182 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>One Day RP</title>
-    <!-- مكتبة الجرافيكس ثلاثي الأبعاد 3D -->
+    <!-- مكتبة الجرافيكس 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; -webkit-touch-callout: none; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: #000; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #070a13; color: #fff; }
 
-        /* شاشة تسجيل الدخول */
+        /* شاشة الدخول والسيرفرات */
         #auth-screen {
-            position: absolute; width: 100%; height: 100%; z-index: 100;
+            position: absolute; width: 100%; height: 100%; z-index: 1000;
             background: linear-gradient(rgba(10, 15, 29, 0.85), rgba(10, 15, 29, 0.95)),
                         url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1920&auto=format&fit=crop') center/cover;
-            display: flex; align-items: center; justify-content: center; color: #fff;
+            display: flex; align-items: center; justify-content: center;
         }
         .auth-card {
-            background: rgba(18, 24, 43, 0.92); border: 1px solid rgba(255, 75, 43, 0.3);
-            border-radius: 20px; width: 90%; max-width: 440px; padding: 25px; text-align: center;
+            background: rgba(18, 24, 43, 0.94); border: 1px solid rgba(255, 75, 43, 0.4);
+            border-radius: 24px; width: 92%; max-width: 450px; padding: 25px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
-        .logo { font-size: 26px; font-weight: 900; color: #ff4b2b; letter-spacing: 2px; }
-        .servers-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
+        .logo-title { font-size: 28px; font-weight: 900; color: #ff4b2b; letter-spacing: 2px; }
+        .servers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
         .server-btn {
             background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1);
-            border-radius: 10px; padding: 8px 4px; color: #fff; cursor: pointer; font-size: 13px; font-weight: bold;
+            border-radius: 12px; padding: 10px 4px; cursor: pointer; color: #fff; font-size: 13px; font-weight: bold;
         }
-        .server-btn.active { border-color: #ff4b2b; background: rgba(255,75,43,0.2); }
+        .server-btn.active { border-color: #ff4b2b; background: rgba(255,75,43,0.25); }
         .auth-input {
-            width: 100%; padding: 12px; margin-bottom: 12px; background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; outline: none; font-size: 14px;
+            width: 100%; padding: 13px; margin-bottom: 12px; background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; outline: none; font-size: 14px;
         }
-        .btn-play {
+        .btn-main {
             width: 100%; padding: 14px; background: linear-gradient(45deg, #ff4b2b, #ff416c);
-            border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer;
+            border: none; border-radius: 12px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer;
         }
 
-        /* واجهة اللعب HUD (الهاتف) */
+        /* واجهة اللعب HUD */
         #game-ui { display: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
         
-        /* الخريطة المصغرة وأشرطة الصحة (أعلى اليسار) */
+        /* المنطقة الخضراء والـ HUD العلوي */
+        .safezone-badge {
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.25); border: 1.5px solid #10b981;
+            padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; color: #10b981;
+        }
         .hud-left { position: absolute; top: 15px; left: 15px; pointer-events: auto; }
         .minimap {
-            width: 90px; height: 90px; border-radius: 50%; border: 2px solid #fff;
-            background: rgba(15, 23, 42, 0.85); box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center; font-size: 10px; color: #00ff88; font-weight: bold;
+            width: 85px; height: 85px; border-radius: 50%; border: 2px solid #fff;
+            background: #111827; display: flex; align-items: center; justify-content: center;
+            font-size: 10px; color: #00ff88; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
         }
-        .bars-container { width: 90px; margin-top: 6px; }
-        .bar { height: 6px; border-radius: 3px; margin-bottom: 3px; background: rgba(0,0,0,0.5); }
-        .bar-fill-hp { width: 100%; height: 100%; background: #ef4444; border-radius: 3px; }
-        .bar-fill-armor { width: 80%; height: 100%; background: #3b82f6; border-radius: 3px; }
-
-        /* الكاش والبنك والـ ID (أعلى اليمين) */
         .hud-right { position: absolute; top: 15px; right: 15px; text-align: right; }
-        .money-badge { font-size: 16px; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .money-text { font-size: 17px; font-weight: 900; }
         .cash { color: #10b981; }
         .bank { color: #60a5fa; font-size: 14px; }
-        .player-id { font-size: 11px; color: #cbd5e1; }
 
-        /* عصا التحكم باللمس Joystick (أسفل اليسار) */
+        /* الجويستيك وأزرار الأكشن */
         #joystick-zone {
-            position: absolute; bottom: 25px; left: 25px; width: 120px; height: 120px;
-            background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.2);
+            position: absolute; bottom: 25px; left: 25px; width: 110px; height: 110px;
+            background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.25);
             border-radius: 50%; pointer-events: auto; touch-action: none;
         }
         #joystick-handle {
-            position: absolute; top: 35px; left: 35px; width: 50px; height: 50px;
+            position: absolute; top: 32px; left: 32px; width: 46px; height: 46px;
             background: radial-gradient(circle, #ff4b2b, #ff416c); border-radius: 50%;
-            box-shadow: 0 0 15px rgba(255,75,43,0.6); pointer-events: none;
+        }
+        .actions-zone { position: absolute; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
+        .action-circle {
+            width: 50px; height: 50px; border-radius: 50%; background: rgba(18, 24, 43, 0.9);
+            border: 1.5px solid rgba(255,255,255,0.3); color: #fff; font-size: 12px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
 
-        /* أزرار الأكشن (أسفل اليمين) */
-        .actions-zone { position: absolute; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: auto; }
-        .circle-btn {
-            width: 52px; height: 52px; border-radius: 50%; background: rgba(18, 24, 43, 0.85);
-            border: 1.5px solid rgba(255,255,255,0.3); color: #fff; font-weight: bold; font-size: 12px;
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            cursor: pointer;
+        /* نافذة الهاتف الذكي OnePhone */
+        #phone-modal {
+            position: absolute; bottom: 20px; right: 85px; width: 280px; height: 480px;
+            background: #0f172a; border: 3px solid #334155; border-radius: 30px;
+            padding: 15px; display: none; flex-direction: column; pointer-events: auto; z-index: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
-        .btn-interact { background: #ff4b2b; border-color: #ff4b2b; }
+        .phone-header { text-align: center; font-size: 13px; font-weight: bold; color: #94a3b8; border-bottom: 1px solid #1e293b; padding-bottom: 8px; margin-bottom: 12px; }
+        .phone-apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .app-icon {
+            background: #1e293b; border-radius: 14px; padding: 12px 6px; text-align: center;
+            font-size: 11px; font-weight: bold; cursor: pointer; border: 1px solid #334155;
+        }
 
-        /* أزرار المايك، الشات، والهاتف */
-        .top-tools { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; pointer-events: auto; }
-        .tool-btn {
-            background: rgba(18, 24, 43, 0.85); border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 14px; border-radius: 20px; color: #fff; font-size: 12px; font-weight: bold; cursor: pointer;
+        /* قائمة الشرطة (...) */
+        #police-radial {
+            position: absolute; bottom: 90px; right: 90px; background: rgba(18, 24, 43, 0.95);
+            border: 1px solid #ff4b2b; border-radius: 14px; padding: 10px; display: none;
+            flex-direction: column; gap: 6px; pointer-events: auto; width: 170px; z-index: 600;
         }
-        .mic-active { background: #10b981; border-color: #10b981; }
+        .radial-item {
+            padding: 8px 10px; background: #0f172a; border-radius: 8px; font-size: 11px;
+            font-weight: bold; cursor: pointer; text-align: center; border: 1px solid #334155;
+        }
 
-        /* نافذة الشات العام */
-        #chat-window {
-            position: absolute; bottom: 160px; left: 20px; width: 280px; height: 150px;
-            background: rgba(0,0,0,0.6); border-radius: 10px; padding: 10px; display: none;
-            flex-direction: column; pointer-events: auto;
+        /* عداد السجن */
+        #jail-timer-badge {
+            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+            background: rgba(220, 38, 38, 0.9); border-radius: 15px; padding: 6px 16px;
+            font-size: 12px; font-weight: bold; display: none;
         }
-        #chat-messages { flex: 1; overflow-y: auto; font-size: 12px; color: #fff; margin-bottom: 5px; }
-        #chat-input { background: rgba(255,255,255,0.1); border: 1px solid #444; border-radius: 5px; padding: 6px; color: #fff; outline: none; }
     </style>
 </head>
 <body>
 
-    <!-- 1. شاشة الدخول والسيرفرات -->
+    <!-- شاشة تسجيل الدخول -->
     <div id="auth-screen">
         <div class="auth-card">
-            <div class="logo">ONE DAY RP</div>
-            <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">عالم الحياة الواقعية للموبايل</div>
-
-            <!-- اختيار السيرفر -->
-            <div class="servers-row">
-                <div class="server-btn active" onclick="pickServer(this, 'Lomina')">Lomina<br><span style="font-size:9px; color:#10b981;">● 25ms</span></div>
-                <div class="server-btn" onclick="pickServer(this, 'Holland')">Holland<br><span style="font-size:9px; color:#10b981;">● 32ms</span></div>
-                <div class="server-btn" onclick="pickServer(this, 'Fortuna')">Fortuna<br><span style="font-size:9px; color:#10b981;">● 28ms</span></div>
+            <div class="logo-title">ONE DAY RP</div>
+            <p style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">عالم الرول بلاي الحقيقي للموبايل</p>
+            
+            <div class="servers-grid">
+                <div class="server-btn active" onclick="selectServer(this, 'Lomina')">Lomina<br><span style="font-size:9px; color:#10b981;">● 25ms</span></div>
+                <div class="server-btn" onclick="selectServer(this, 'Holland')">Holland<br><span style="font-size:9px; color:#10b981;">● 32ms</span></div>
+                <div class="server-btn" onclick="selectServer(this, 'Fortuna')">Fortuna<br><span style="font-size:9px; color:#10b981;">● 28ms</span></div>
             </div>
 
-            <input type="text" id="char-name" class="auth-input" placeholder="اسم الشخصية (مثال: Ali_Karim)" value="Ali_Karim">
+            <input type="text" id="player-username" class="auth-input" placeholder="اسم الشخصية (مثال: Ali_Karim)" value="Ali_Karim">
             <input type="password" class="auth-input" placeholder="كلمة المرور" value="12345678">
 
-            <button class="btn-play" onclick="startGame()">دخول السيرفر والانطلاق 🚀</button>
+            <button class="btn-main" onclick="enterGameWorld()">دخول السيرفر والانطلاق 🚀</button>
         </div>
     </div>
 
-    <!-- 2. واجهة اللعب داخل السيرفر HUD -->
+    <!-- واجهة اللعبة داخل السيرفر -->
     <div id="game-ui">
-        <!-- الخريطة المصغرة -->
+        <div class="safezone-badge">🛡️ منطقة آمنة (Green Zone) - القتل ممنوع</div>
+        <div id="jail-timer-badge">🚨 متبقي في السجن: <span id="jail-count">15:00</span> دقيقة</div>
+
+        <!-- الخريطة -->
         <div class="hud-left">
             <div class="minimap">خريطة المدينة<br>GPS</div>
-            <div class="bars-container">
-                <div class="bar"><div class="bar-fill-hp"></div></div>
-                <div class="bar"><div class="bar-fill-armor"></div></div>
-            </div>
         </div>
 
-        <!-- الأدوات العلوية: المايك، الشات، الهاتف -->
-        <div class="top-tools">
-            <button class="tool-btn" id="mic-btn" onclick="toggleMic()">🎙️ المايك: مغلق</button>
-            <button class="tool-btn" onclick="toggleChat()">💬 الشات العام</button>
-            <button class="tool-btn" style="background:#f59e0b; color:#000;" onclick="openPhone()">📱 OnePhone</button>
-        </div>
-
-        <!-- الفلوس والـ ID -->
+        <!-- رصيد الكاش والبنك -->
         <div class="hud-right">
-            <div class="money-badge cash" id="cash-val">1,000 $</div>
-            <div class="money-badge bank" id="bank-val">5,000 $ (بنك)</div>
-            <div class="player-id" id="pid-tag">ID: #101 • Lomina</div>
+            <div class="money-text cash" id="hud-cash">1,000 $</div>
+            <div class="money-text bank" id="hud-bank">5,000 $ (بنك)</div>
+            <div style="font-size: 11px; color: #94a3b8;" id="hud-server-tag">ID: #101 • Lomina</div>
         </div>
 
-        <!-- الشات العام -->
-        <div id="chat-window">
-            <div id="chat-messages">
-                <div><b style="color:#ff4b2b;">[السيرفر]:</b> أهلاً بك في One Day RP!</div>
-                <div><b style="color:#3b82f6;">[شرطي]:</b> دوريات الأمن متواجدة وسط المدينة.</div>
-            </div>
-            <input type="text" id="chat-input" placeholder="اكتب في الشات واضغط Enter..." onkeydown="sendChat(event)">
-        </div>
-
-        <!-- عصا التحكم باللمس Joystick -->
-        <div id="joystick-zone">
-            <div id="joystick-handle"></div>
-        </div>
-
-        <!-- أزرار الأكشن (لمس) -->
+        <!-- أزرار الأكشن والتحكم -->
+        <div id="joystick-zone"><div id="joystick-handle"></div></div>
+        
         <div class="actions-zone">
-            <div class="circle-btn btn-interact" onclick="interact()">يد ✋</div>
-            <div class="circle-btn" onclick="jump()">قفز ⬆</div>
-            <div class="circle-btn" onclick="sprint()">ركض ⚡</div>
-            <div class="circle-btn" style="background:#1e293b;" onclick="policeMenu()">•••</div>
+            <div class="action-circle" style="background:#ff4b2b;" onclick="useInteract()">يد ✋</div>
+            <div class="action-circle" onclick="useJump()">قفز ⬆</div>
+            <div class="action-circle" style="background:#f59e0b; color:#000;" onclick="togglePhone()">📱 هاتف</div>
+            <div class="action-circle" onclick="togglePoliceMenu()">•••</div>
+        </div>
+
+        <!-- قائمة تفاعل الشرطة (...) -->
+        <div id="police-radial">
+            <div class="radial-item" onclick="policeAction('طلب مستندات ورخصة')">🪪 طلب مستندات</div>
+            <div class="radial-item" onclick="policeAction('تسجيل مخالفة مرورية')">📝 تسجيل مخالفة</div>
+            <div class="radial-item" onclick="policeAction('تقييد اليدين (كلبشات)')">⛓️ تقييد (Cuff)</div>
+            <div class="radial-item" onclick="policeAction('إرسال إلى السجن')">🚔 إدخال السجن</div>
+        </div>
+
+        <!-- هاتف OnePhone الذكي -->
+        <div id="phone-modal">
+            <div class="phone-header">OnePhone OS • v2.0</div>
+            <div class="phone-apps">
+                <div class="app-icon" onclick="phoneApp('البنك')">🏦<br>البنك</div>
+                <div class="app-icon" onclick="phoneApp('الكراج')">🚗<br>سياراتي</div>
+                <div class="app-icon" onclick="phoneApp('الوظائف')">💼<br>الوظائف</div>
+                <div class="app-icon" onclick="phoneApp('الشرطة')">🚨<br>طوارئ 911</div>
+                <div class="app-icon" onclick="phoneApp('البروموكود')">🎁<br>هدية كود</div>
+                <div class="app-icon" onclick="togglePhone()">❌<br>إغلاق</div>
+            </div>
         </div>
     </div>
 
-    <!-- كود المحرك ثلاثي الأبعاد والتحكم -->
-    <script>
-        let scene, camera, renderer, player;
-        let moveX = 0, moveZ = 0;
-        let selectedServer = "Lomina";
-
-        function pickServer(el, sName) {
-            document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-            selectedServer = sName;
-        }
-
-        function startGame() {
-            const name = document.getElementById('char-name').value;
-            if(!name) return alert("اكتب اسم الشخصية أولاً!");
-
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('game-ui').style.display = 'block';
-            document.getElementById('pid-tag').innerText = `ID: #101 • ${selectedServer}`;
-
-            init3DWorld();
-            initTouchControls();
-        }
-
-        // بناء العالم ثلاثي الأبعاد
-        function init3DWorld() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0a0f1d);
-            scene.fog = new THREE.FogExp2(0x0a0f1d, 0.03);
-
-            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-
-            // الإضاءة
-            const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambient);
-            const sun = new THREE.DirectionalLight(0xff4b2b, 0.8);
-            sun.position.set(20, 40, 20);
-            scene.add(sun);
-
-            // أرضية المدينة
-            const floorGeo = new THREE.PlaneGeometry(300, 300);
-            const floorMat = new THREE.MeshStandardMaterial({ color: 0x111827 });
-            const floor = new THREE.Mesh(floorGeo, floorMat);
-            floor.rotation.x = -Math.PI / 2;
-            scene.add(floor);
-
-            // مباني المدينة حول اللاعب
-            for(let i = 0; i < 40; i++) {
-                const h = 10 + Math.random() * 25;
-                const bGeo = new THREE.BoxGeometry(8, h, 8);
-                const bMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
-                const building = new THREE.Mesh(bGeo, bMat);
-                building.position.set((Math.random() - 0.5) * 180, h/2, (Math.random() - 0.5) * 180);
-                if(Math.abs(building.position.x) > 15 || Math.abs(building.position.z) > 15) {
-                    scene.add(building);
-                }
-            }
-
-            // شخصية اللاعب (مجسم 3D)
-            const pGeo = new THREE.CylinderGeometry(0.5, 0.5, 1.8, 16);
-            const pMat = new THREE.MeshStandardMaterial({ color: 0xff4b2b });
-            player = new THREE.Mesh(pGeo, pMat);
-            player.position.y = 0.9;
-            scene.add(player);
-
-            animate();
-        }
-
-        // حركة الكاميرا واللاعب
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if(player) {
-                player.position.x += moveX * 0.15;
-                player.position.z += moveZ * 0.15;
-
-                // تتبع الكاميرا للاعب من منظور الشخص الثالث (Third-Person)
-                camera.position.x = player.position.x;
-                camera.position.y = player.position.y + 4;
-                camera.position.z = player.position.z + 7;
-                camera.lookAt(player.position.x, player.position.y + 1, player.position.z);
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        // تحكم لمس الجويستيك (Joystick)
-        function initTouchControls() {
-            const zone = document.getElementById('joystick-zone');
-            const handle = document.getElementById('joystick-handle');
-            let touching = false;
-
-            zone.addEventListener('touchstart', (e) => { touching = true; updateJoy(e); });
-            window.addEventListener('touchmove', (e) => { if(touching) updateJoy(e); });
-            window.addEventListener('touchend', () => {
-                touching = false;
-                handle.style.top = '35px';
-                handle.style.left = '35px';
-                moveX = 0; moveZ = 0;
-            });
-
-            function updateJoy(e) {
-                const touch = e.touches[0];
-                const rect = zone.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                let dx = touch.clientX - centerX;
-                let dy = touch.clientY - centerY;
-                const dist = Math.min(45, Math.hypot(dx, dy));
-                const angle = Math.atan2(dy, dx);
-
-                handle.style.left = `${35 + Math.cos(angle) * dist}px`;
-                handle.style.top = `${35 + Math.sin(angle) * dist}px`;
-
-                moveX = (Math.cos(angle) * dist) / 45;
-                moveZ = (Math.sin(angle) * dist) / 45;
-            }
-        }
-
-        // الأوامر الصوتية والتفاعلية
-        function toggleMic() {
-            const btn = document.getElementById('mic-btn');
-            btn.classList.toggle('mic-active');
-            btn.innerText = btn.classList.contains('mic-active') ? "🎙️ المايك: متصل 🟢" : "🎙️ المايك: مغلق";
-        }
-
-        function toggleChat() {
-            const c = document.getElementById('chat-window');
-            c.style.display = c.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        function sendChat(e) {
-            if(e.key === 'Enter') {
-                const inp = document.getElementById('chat-input');
-                if(!inp.value) return;
-                const msgs = document.getElementById('chat-messages');
-                msgs.innerHTML += `<div><b>أنت:</b> ${inp.value}</div>`;
-                msgs.scrollTop = msgs.scrollHeight;
-                inp.value = '';
-            }
-        }
-
-        function openPhone() {
-            alert("📱 تم فتح هاتف OnePhone:\n- البنك (تحويل كاش)\n- كراج السيارات\n- طوارئ الشرطة 911\n- الوظائف المدنية");
-        }
-
-        function interact() { alert("✋ تفاعل: فتح باب / ركوب سيارة القريبة."); }
-        function jump() { if(player) player.position.y += 0.5; setTimeout(() => player.position.y = 0.9, 200); }
-        function sprint() { alert("⚡ تم تفعيل الركض السريع!"); }
-        function policeMenu() {
-            alert("👮‍♂️ قائمة إجراءات الشرطة (...):\n1. طلب مستندات وهويات\n2. تسجيل مخالفة مرورية\n3. تقييد وسجن المشتبه به");
-        }
-
-        window.addEventListener('resize', () => {
-            if(camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        });
-    </script>
+    <!-- ربط ملفات الأنظمة والعالم 3D -->
+    <script src="systems.js"></script>
+    <script src="world3d.js"></script>
 </body>
     </html>
