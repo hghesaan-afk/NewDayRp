@@ -3,70 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>One Day RP</title>
+    <title>One Day RP - المدينة الكاملة</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: #070a13; color: #fff; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #050811; color: #fff; }
 
         /* شاشة الدخول والسيرفرات */
         #auth-screen {
-            position: absolute; width: 100%; height: 100%; z-index: 1000;
-            background: linear-gradient(rgba(10, 15, 29, 0.88), rgba(10, 15, 29, 0.95)),
+            position: absolute; width: 100%; height: 100%; z-index: 2000;
+            background: linear-gradient(rgba(10, 15, 29, 0.9), rgba(10, 15, 29, 0.98)),
                         url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1920&auto=format&fit=crop') center/cover;
             display: flex; align-items: center; justify-content: center;
         }
         .auth-card {
-            background: rgba(18, 24, 43, 0.95); border: 1px solid rgba(255, 75, 43, 0.4);
-            border-radius: 20px; width: 92%; max-width: 440px; padding: 20px; text-align: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            background: rgba(15, 23, 42, 0.96); border: 2px solid #ff4b2b;
+            border-radius: 20px; width: 92%; max-width: 440px; padding: 22px; text-align: center;
+            box-shadow: 0 0 35px rgba(255, 75, 43, 0.4);
         }
-        .logo-title { font-size: 26px; font-weight: 900; color: #ff4b2b; letter-spacing: 2px; }
-        .servers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+        .logo-title { font-size: 28px; font-weight: 900; color: #ff4b2b; letter-spacing: 2px; }
+        .servers-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
         .server-btn {
-            background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.15);
             border-radius: 10px; padding: 8px 4px; cursor: pointer; color: #fff; font-size: 12px; font-weight: bold;
         }
-        .server-btn.active { border-color: #ff4b2b; background: rgba(255,75,43,0.25); }
+        .server-btn.active { border-color: #ff4b2b; background: rgba(255,75,43,0.3); }
         .auth-input {
-            width: 100%; padding: 11px; margin-bottom: 10px; background: rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; outline: none; font-size: 13px;
+            width: 100%; padding: 12px; margin-bottom: 12px; background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; outline: none; font-size: 14px;
         }
         .btn-main {
-            width: 100%; padding: 13px; background: linear-gradient(45deg, #ff4b2b, #ff416c);
-            border: none; border-radius: 10px; color: #fff; font-size: 15px; font-weight: bold; cursor: pointer;
+            width: 100%; padding: 14px; background: linear-gradient(45deg, #ff4b2b, #ff416c);
+            border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer;
         }
 
         /* واجهة اللعب HUD */
-        #game-ui { display: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
+        #game-ui { display: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 100; }
         
         .safezone-badge {
-            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-            background: rgba(16, 185, 129, 0.25); border: 1.5px solid #10b981;
-            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; color: #10b981;
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            background: rgba(16, 185, 129, 0.2); border: 1.5px solid #10b981;
+            padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; color: #10b981;
         }
 
-        /* زر مناوبة المالك البارز */
-        .owner-duty-btn {
-            position: absolute; top: 10px; right: 180px; pointer-events: auto;
+        /* زر مناوبة المالك */
+        .owner-btn {
+            position: absolute; top: 12px; right: 180px; pointer-events: auto;
             background: linear-gradient(45deg, #d97706, #f59e0b); color: #000;
             border: 1px solid #fff; border-radius: 20px; padding: 6px 14px;
-            font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+            font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
         }
 
-        .hud-left { position: absolute; top: 10px; left: 15px; pointer-events: auto; }
+        .hud-left { position: absolute; top: 12px; left: 15px; pointer-events: auto; }
         .minimap {
             width: 75px; height: 75px; border-radius: 50%; border: 2px solid #fff;
             background: #111827; display: flex; align-items: center; justify-content: center;
-            font-size: 9px; color: #00ff88; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            font-size: 9px; color: #00ff88; font-weight: bold;
         }
 
-        .hud-right { position: absolute; top: 10px; right: 15px; text-align: right; }
-        .money-text { font-size: 15px; font-weight: 900; }
+        .hud-right { position: absolute; top: 12px; right: 15px; text-align: right; }
+        .money-text { font-size: 16px; font-weight: 900; }
         .cash { color: #10b981; }
         .bank { color: #60a5fa; font-size: 13px; }
 
-        /* عصا التحكم باللمس والجويستيك */
+        /* الجويستيك وأزرار الأكشن */
         #joystick-zone {
             position: absolute; bottom: 20px; left: 20px; width: 110px; height: 110px;
             background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.25);
@@ -77,13 +77,22 @@
             background: radial-gradient(circle, #ff4b2b, #ff416c); border-radius: 50%;
         }
 
-        /* أزرار الأكشن */
         .actions-zone { position: absolute; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
         .action-circle {
-            width: 48px; height: 48px; border-radius: 50%; background: rgba(18, 24, 43, 0.9);
+            width: 50px; height: 50px; border-radius: 50%; background: rgba(18, 24, 43, 0.9);
             border: 1.5px solid rgba(255,255,255,0.3); color: #fff; font-size: 11px; font-weight: bold;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
+
+        /* نافذة المالك الإدارية (Admin Modal) */
+        #admin-panel-modal {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85%; max-width: 420px; background: #0f172a; border: 2px solid #f59e0b;
+            border-radius: 20px; padding: 20px; display: none; flex-direction: column; gap: 10px;
+            pointer-events: auto; z-index: 3000; box-shadow: 0 0 40px rgba(0,0,0,0.9);
+        }
+        .admin-modal-title { font-size: 16px; font-weight: 900; color: #f59e0b; text-align: center; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        .admin-btn { padding: 10px; border: none; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; color: #fff; }
 
         /* نافذة الهاتف الذكي OnePhone */
         #phone-modal {
@@ -97,124 +106,405 @@
             background: #1e293b; border-radius: 12px; padding: 10px 4px; text-align: center;
             font-size: 10px; font-weight: bold; cursor: pointer; border: 1px solid #334155;
         }
-
-        /* زر المايك */
-        .mic-btn {
-            position: absolute; top: 10px; left: 110px; pointer-events: auto;
-            background: rgba(18, 24, 43, 0.85); border: 1.5px solid rgba(255,255,255,0.25);
-            padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer;
-        }
-        .mic-active { background: #10b981; border-color: #10b981; }
-
-        /* شاشة توجيه للتدوير بالعرض إذا كان الهاتف واقفاً */
-        #rotate-warning {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0a0f1d; z-index: 9999; color: #fff; text-align: center;
-            padding-top: 35vh; font-size: 18px; font-weight: bold;
-        }
-        @media screen and (orientation: portrait) {
-            #rotate-warning { display: block; }
-        }
     </style>
 </head>
 <body>
-
-    <!-- تنبيه لتدوير الهاتف بالعرض للعب بملء الشاشة -->
-    <div id="rotate-warning">
-        🔄 يرجى تدوير شاشة هاتفك بالعرض (Landscape)<br>
-        <span style="font-size: 13px; color: #ff4b2b;">للعب بملء الشاشة وتجربة واقعية كاملة</span>
-    </div>
 
     <!-- شاشة الدخول -->
     <div id="auth-screen">
         <div class="auth-card">
             <div class="logo-title">ONE DAY RP</div>
-            <p style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">الحياة الواقعية للهواتف</p>
+            <p style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">عالم الحياة الواقعية للموبايل</p>
             
-            <div class="servers-grid">
-                <div class="server-btn active" onclick="selectServer(this, 'Lomina')">Lomina<br><span style="font-size:9px; color:#10b981;">● 25ms</span></div>
-                <div class="server-btn" onclick="selectServer(this, 'Holland')">Holland<br><span style="font-size:9px; color:#10b981;">● 32ms</span></div>
-                <div class="server-btn" onclick="selectServer(this, 'Fortuna')">Fortuna<br><span style="font-size:9px; color:#10b981;">● 28ms</span></div>
+            <div class="servers-row">
+                <div class="server-btn active" onclick="pickServer(this, 'Lomina')">Lomina<br><span style="font-size:9px; color:#10b981;">● 25ms</span></div>
+                <div class="server-btn" onclick="pickServer(this, 'Holland')">Holland<br><span style="font-size:9px; color:#10b981;">● 32ms</span></div>
+                <div class="server-btn" onclick="pickServer(this, 'Fortuna')">Fortuna<br><span style="font-size:9px; color:#10b981;">● 28ms</span></div>
             </div>
 
-            <input type="text" id="player-username" class="auth-input" placeholder="اسم الشخصية (مثال: Owner_Hghesaan)" value="Owner_Hghesaan">
+            <input type="text" id="player-name" class="auth-input" placeholder="اسم الشخصية" value="Owner_Hghesaan">
             <input type="password" class="auth-input" placeholder="كلمة المرور" value="12345678">
 
-            <button class="btn-main" onclick="enterGameFullscreen()">دخول السيرفر واللعب بالعرض 🚀</button>
+            <button class="btn-main" onclick="startTheGame()">دخول المدينة والانطلاق 🚀</button>
         </div>
     </div>
 
     <!-- واجهة اللعب HUD -->
     <div id="game-ui">
-        <div class="safezone-badge">🛡️ منطقة آمنة (Green Zone)</div>
-        <button class="owner-duty-btn" onclick="toggleAdminDuty()">👑 مناوبة المالك</button>
-        <button class="mic-btn" id="hud-mic-btn" onclick="toggleRealMic()">🎙️ مايك: مغلق</button>
+        <div class="safezone-badge" id="hud-zone">🛡️ منطقة آمنة (وسط المدينة)</div>
+        <button class="owner-btn" onclick="openOwnerPanel()">👑 مناوبة المالك</button>
 
         <div class="hud-left"><div class="minimap">خريطة المدينة<br>GPS</div></div>
 
         <div class="hud-right">
-            <div class="money-text cash" id="hud-cash">1,000 $</div>
-            <div class="money-text bank" id="hud-bank">5,000 $ (بنك)</div>
-            <div style="font-size: 10px; color: #94a3b8;" id="hud-server-tag">ID: #1 • Lomina</div>
+            <div class="money-text cash" id="hud-cash">50,000 $</div>
+            <div class="money-text bank" id="hud-bank">250,000 $ (بنك)</div>
+            <div style="font-size: 10px; color: #94a3b8;" id="hud-tag">👑 [OWNER] • Lomina</div>
         </div>
 
         <div id="joystick-zone"><div id="joystick-handle"></div></div>
         
         <div class="actions-zone">
-            <div class="action-circle" style="background:#ff4b2b;" onclick="useInteract()">يد ✋</div>
-            <div class="action-circle" onclick="useJump()">قفز ⬆</div>
+            <div class="action-circle" style="background:#ff4b2b;" onclick="handleInteract()">يد ✋</div>
+            <div class="action-circle" onclick="handleJump()">قفز ⬆</div>
             <div class="action-circle" style="background:#f59e0b; color:#000;" onclick="togglePhone()">📱 هاتف</div>
-            <div class="action-circle" onclick="togglePoliceMenu()">•••</div>
+            <div class="action-circle" onclick="policeMenu()">•••</div>
+        </div>
+
+        <!-- لوحة تحكم المالك المباشرة (Admin Duty) -->
+        <div id="admin-panel-modal">
+            <div class="admin-modal-title">👑 لوحة القيادة العليا للمالك (Owner)</div>
+            <button class="admin-btn" style="background:#10b981;" onclick="ownerGiveCash()">💵 شحن 1,000,000$ لحسابي فوراً</button>
+            <button class="admin-btn" style="background:#d97706;" onclick="ownerGodmode()">🛡️ تفعيل وضع الخلود التام (Godmode)</button>
+            <button class="admin-btn" style="background:#2563eb;" onclick="teleportTo('police')">🚔 الانتقال السريع: مركز الشرطة المركزي</button>
+            <button class="admin-btn" style="background:#7c3aed;" onclick="teleportTo('bank')">🏦 الانتقال السريع: البنك المركزي</button>
+            <button class="admin-btn" style="background:#059669;" onclick="teleportTo('dealer')">🏎️ الانتقال السريع: معرض السيارات الفاخرة</button>
+            <button class="admin-btn" style="background:#475569;" onclick="toggleDayNight()">☀️ تحويل الوقت: نهار / ليل</button>
+            <button class="admin-btn" style="background:#dc2626;" onclick="closeOwnerPanel()">❌ إغلاق لوحة المالك</button>
         </div>
 
         <!-- هاتف OnePhone -->
         <div id="phone-modal">
-            <div class="phone-header">OnePhone OS</div>
+            <div class="phone-header">OnePhone OS • v2.0</div>
             <div class="phone-apps">
-                <div class="app-icon" onclick="phoneApp('البنك')">🏦<br>البنك</div>
-                <div class="app-icon" onclick="phoneApp('الكراج')">🚗<br>سياراتي</div>
-                <div class="app-icon" onclick="phoneApp('الوظائف')">💼<br>الوظائف</div>
-                <div class="app-icon" onclick="phoneApp('الشرطة')">🚨<br>طوارئ 911</div>
-                <div class="app-icon" onclick="phoneApp('البروموكود')">🎁<br>هدية كود</div>
+                <div class="app-icon" onclick="phoneBank()">🏦<br>البنك</div>
+                <div class="app-icon" onclick="phoneGarage()">🚗<br>سياراتي</div>
+                <div class="app-icon" onclick="phoneJobs()">💼<br>الوظائف</div>
+                <div class="app-icon" onclick="alert('🚨 911: تم إرسال موقعك للشرطة')">🚨<br>طوارئ</div>
+                <div class="app-icon" onclick="phonePromo()">🎁<br>بروموكود</div>
                 <div class="app-icon" onclick="togglePhone()">❌<br>إغلاق</div>
             </div>
         </div>
     </div>
 
+    <!-- المحرك الكامل ثلاثي الأبعاد والمنطق البرمجي المدمج -->
     <script>
-        // تفعيل ملء الشاشة بالعرض
-        function enterGameFullscreen() {
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            }
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch(() => {});
-            }
-            enterGameWorld();
+        let scene, camera, renderer;
+        let character, car, sunLight;
+        let moveX = 0, moveZ = 0;
+        let inCar = false;
+        let godmodeActive = false;
+        let isNight = true;
+
+        let cashBalance = 50000;
+        let bankBalance = 250000;
+        let currentServer = "Lomina";
+
+        function pickServer(el, name) {
+            document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+            currentServer = name;
         }
 
-        // تشغيل المايك الحقيقي من الهاتف
-        let micStream = null;
-        async function toggleRealMic() {
-            const btn = document.getElementById('hud-mic-btn');
-            if (!micStream) {
-                try {
-                    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    btn.classList.add('mic-active');
-                    btn.innerText = "🎙️ المايك: متصل 🟢";
-                    alert("🎙️ [المايك الحقيقي]: تم تفعيل الميكروفون بنجاح! صوتك مسموع الآن في السيرفر.");
-                } catch (e) {
-                    alert("❌ يرجى منح إذن استخدام الميكروفون من إعدادات المتصفح!");
+        function startTheGame() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('game-ui').style.display = 'block';
+            document.getElementById('hud-tag').innerText = `👑 [OWNER] • ${currentServer}`;
+
+            buildWorld3D();
+            setupTouchJoystick();
+        }
+
+        // --- بناء المدينة ثلاثية الأبعاد والمواقع بالكامل ---
+        function buildWorld3D() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x060913);
+            scene.fog = new THREE.FogExp2(0x060913, 0.012);
+
+            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            const ambient = new THREE.AmbientLight(0xffffff, 0.65);
+            scene.add(ambient);
+
+            sunLight = new THREE.DirectionalLight(0x93c5fd, 0.9);
+            sunLight.position.set(60, 100, 60);
+            scene.add(sunLight);
+
+            // 1. أرضية المدينة وشبكة الطرق الرئيسية
+            const groundGeo = new THREE.PlaneGeometry(800, 800);
+            const groundMat = new THREE.MeshStandardMaterial({ color: 0x090d16 });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            scene.add(ground);
+
+            // شارع رئيسي طولي وعرضي (تقاطع شوارع)
+            buildRoad(0, 0, 26, 600, false);
+            buildRoad(0, 0, 26, 600, true);
+
+            // 2. موقع مركز الشرطة المركزي (Police Station)
+            createLandmark(-35, 12, 0x1e3a8a, "POLICE DEPT", 0x3b82f6);
+
+            // 3. موقع البنك المركزي (Central Bank)
+            createLandmark(35, 16, 0xd97706, "CENTRAL BANK", 0xf59e0b);
+
+            // 4. موقع المستشفى العام (City Hospital)
+            createLandmark(-35, -50, 0xdc2626, "CITY HOSPITAL", 0xef4444);
+
+            // 5. معرض السيارات الفاخرة (Luxury Dealership)
+            createLandmark(35, 50, 0x059669, "SUPERCAR DEALER", 0x10b981);
+
+            // 6. مباني ناطحات سحاب في الأرجاء
+            for(let i = 0; i < 40; i++) {
+                const h = 25 + Math.random() * 45;
+                const bGeo = new THREE.BoxGeometry(16, h, 16);
+                const bMat = new THREE.MeshStandardMaterial({ color: (i % 2 === 0) ? 0x1e293b : 0x0f172a });
+                const b = new THREE.Mesh(bGeo, bMat);
+
+                let x = (Math.random() - 0.5) * 350;
+                let z = (Math.random() - 0.5) * 350;
+                if(Math.abs(x) > 25 && Math.abs(z) > 25) {
+                    b.position.set(x, h/2, z);
+                    scene.add(b);
+                }
+            }
+
+            // 7. بناء شخصية إنسان حقيقي
+            createHumanCharacter();
+
+            // 8. بناء سيارة دورية شرطة قابلة للقيادة
+            createDrivableCar();
+
+            animateLoop();
+        }
+
+        // بناء الشوارع والخطوط البيضاء
+        function buildRoad(x, z, width, length, rotate) {
+            const roadGeo = new THREE.PlaneGeometry(width, length);
+            const roadMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.9 });
+            const road = new THREE.Mesh(roadGeo, roadMat);
+            road.rotation.x = -Math.PI / 2;
+            if(rotate) road.rotation.z = Math.PI / 2;
+            road.position.set(x, 0.02, z);
+            scene.add(road);
+
+            // خطوط الشارع المتقطعة
+            for(let i = -length/2 + 10; i < length/2; i += 16) {
+                const lineGeo = new THREE.PlaneGeometry(0.6, 8);
+                const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                const line = new THREE.Mesh(lineGeo, lineMat);
+                line.rotation.x = -Math.PI / 2;
+                if(rotate) {
+                    line.rotation.z = Math.PI / 2;
+                    line.position.set(i, 0.03, 0);
+                } else {
+                    line.position.set(0, 0.03, i);
+                }
+                scene.add(line);
+            }
+        }
+
+        // بناء معلم مميز (مركز شرطة، بنك، إلخ)
+        function createLandmark(x, z, color, label, lightColor) {
+            const geo = new THREE.BoxGeometry(22, 14, 26);
+            const mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.4 });
+            const building = new THREE.Mesh(geo, mat);
+            building.position.set(x, 7, z);
+            scene.add(building);
+
+            // لوحة إضاءة فوق المبنى
+            const light = new THREE.PointLight(lightColor, 2.5, 35);
+            light.position.set(x, 15, z);
+            scene.add(light);
+        }
+
+        // بناء شخصية الإنسان
+        function createHumanCharacter() {
+            character = new THREE.Group();
+
+            const torso = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.85, 0.4), new THREE.MeshStandardMaterial({ color: 0x1e3a8a }));
+            torso.position.y = 1.35;
+            character.add(torso);
+
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.42, 0.38), new THREE.MeshStandardMaterial({ color: 0xfbcfe8 }));
+            head.position.y = 2.0;
+            character.add(head);
+
+            const cap = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.16, 0.46), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+            cap.position.y = 2.22;
+            character.add(cap);
+
+            const legL = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.9, 0.26), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+            legL.position.set(-0.18, 0.45, 0);
+            character.add(legL);
+
+            const legR = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.9, 0.26), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+            legR.position.set(0.18, 0.45, 0);
+            character.add(legR);
+
+            character.position.set(0, 0, 5);
+            scene.add(character);
+        }
+
+        // بناء سيارة قابلة للركوب والقيادة
+        function createDrivableCar() {
+            car = new THREE.Group();
+
+            const body = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.9, 5), new THREE.MeshStandardMaterial({ color: 0x09090b }));
+            body.position.y = 0.65;
+            car.add(body);
+
+            const cabin = new THREE.Mesh(new THREE.BoxGeometry(2, 0.75, 2.5), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+            cabin.position.set(0, 1.4, -0.2);
+            car.add(cabin);
+
+            // سارينة شرطة
+            const sLight = new THREE.PointLight(0xef4444, 2, 10);
+            sLight.position.set(0, 2.0, -0.2);
+            car.add(sLight);
+
+            car.position.set(6, 0, 12);
+            scene.add(car);
+        }
+
+        // حلقة الرسم والحركة المستمرة
+        function animateLoop() {
+            requestAnimationFrame(animateLoop);
+
+            if(inCar && car) {
+                // قيادة السيارة
+                car.position.x += moveX * 0.45;
+                car.position.z += moveZ * 0.45;
+                if(moveX !== 0 || moveZ !== 0) car.rotation.y = Math.atan2(moveX, moveZ);
+
+                camera.position.x = car.position.x;
+                camera.position.y = car.position.y + 4.5;
+                camera.position.z = car.position.z + 8.5;
+                camera.lookAt(car.position.x, car.position.y + 1, car.position.z);
+            } else if(character) {
+                // مشي اللاعب
+                character.position.x += moveX * 0.18;
+                character.position.z += moveZ * 0.18;
+                if(moveX !== 0 || moveZ !== 0) character.rotation.y = Math.atan2(moveX, moveZ);
+
+                camera.position.x = character.position.x;
+                camera.position.y = character.position.y + 3.8;
+                camera.position.z = character.position.z + 6.8;
+                camera.lookAt(character.position.x, character.position.y + 1.2, character.position.z);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // --- أوامر مناوبة المالك (Owner Admin Panel) ---
+        function openOwnerPanel() {
+            document.getElementById('admin-panel-modal').style.display = 'flex';
+        }
+        function closeOwnerPanel() {
+            document.getElementById('admin-panel-modal').style.display = 'none';
+        }
+
+        function ownerGiveCash() {
+            bankBalance += 1000000;
+            document.getElementById('hud-bank').innerText = `${bankBalance.toLocaleString()} $ (بنك)`;
+            alert("💵 [أمر المالك]: تم شحن 1,000,000$ فوراً في حسابك البنكي!");
+        }
+
+        function ownerGodmode() {
+            godmodeActive = !godmodeActive;
+            alert(godmodeActive ? "🛡️ [وضع الخلود]: تم تفعيل مناعة المالك التامة من أي ضرر!" : "تم تعطيل وضع الخلود.");
+        }
+
+        function teleportTo(location) {
+            closeOwnerPanel();
+            if(location === 'police') character.position.set(-35, 0, 15);
+            if(location === 'bank') character.position.set(35, 0, 15);
+            if(location === 'dealer') character.position.set(35, 0, 65);
+            alert("⚡ [انتقال سريع]: تم نقلك إلى الموقع فوراً بصلاحية المالك!");
+        }
+
+        function toggleDayNight() {
+            isNight = !isNight;
+            scene.background = new THREE.Color(isNight ? 0x060913 : 0x38bdf8);
+            scene.fog.color = new THREE.Color(isNight ? 0x060913 : 0x38bdf8);
+            sunLight.intensity = isNight ? 0.9 : 2.5;
+            alert(isNight ? "🌙 تم تحويل وقت المدينة إلى الليل." : "☀️ تم تحويل وقت المدينة إلى نهار مشمس.");
+        }
+
+        // تفاعل ركوب ونزول السيارة
+        function handleInteract() {
+            if(!inCar) {
+                const dist = character.position.distanceTo(car.position);
+                if(dist < 7) {
+                    inCar = true;
+                    character.visible = false;
+                    alert("🚗 تم ركوب الدورية! حرّك الجويستيك لقيادة السيارة في المدينة.");
+                } else {
+                    alert("✋ تفاعل: اقترب من السيارة لركوبها وقيادتها.");
                 }
             } else {
-                micStream.getTracks().forEach(t => t.stop());
-                micStream = null;
-                btn.classList.remove('mic-active');
-                btn.innerText = "🎙️ مايك: مغلق";
+                inCar = false;
+                character.visible = true;
+                character.position.set(car.position.x + 2, 0, car.position.z);
+                alert("🚶 تم النزول من السيارة.");
+            }
+        }
+
+        function handleJump() {
+            if(character && !inCar) {
+                character.position.y += 0.7;
+                setTimeout(() => character.position.y = 0, 250);
+            }
+        }
+
+        // الهاتف والشات والشرطة
+        function togglePhone() {
+            const p = document.getElementById('phone-modal');
+            p.style.display = (p.style.display === 'flex') ? 'none' : 'flex';
+        }
+        function phoneBank() { alert(`🏦 رصيدك الحالي: ${bankBalance.toLocaleString()}$`); }
+        function phoneGarage() { alert("🚗 سياراتك: Dodge Charger Police ، Lamborghini Gold"); }
+        function phoneJobs() { alert("💼 الوظائف: 1. توصيل 2. شاحنات 3. تاكسي"); }
+        function phonePromo() {
+            const code = prompt("أدخل كود الهدية:");
+            if(code === "ONEDAY2026") {
+                bankBalance += 100000;
+                document.getElementById('hud-bank').innerText = `${bankBalance.toLocaleString()} $ (بنك)`;
+                alert("🎉 مبروك! استلمت 100,000$ في البنك!");
+            } else {
+                alert("❌ كود غير صحيح!");
+            }
+        }
+
+        function policeMenu() {
+            alert("👮‍♂️ قائمة الشرطة (...):\n1. طلب هويات ومستندات\n2. تسجيل مخالفة\n3. تقييد المشتبه به");
+        }
+
+        // الجويستيك
+        function setupTouchJoystick() {
+            const zone = document.getElementById('joystick-zone');
+            const handle = document.getElementById('joystick-handle');
+            let touching = false;
+
+            zone.addEventListener('touchstart', (e) => { touching = true; updateJoy(e); }, { passive: false });
+            window.addEventListener('touchmove', (e) => { if(touching) updateJoy(e); }, { passive: false });
+            window.addEventListener('touchend', () => {
+                touching = false;
+                handle.style.top = '32px';
+                handle.style.left = '32px';
+                moveX = 0; moveZ = 0;
+            });
+
+            function updateJoy(e) {
+                const touch = e.touches[0];
+                const rect = zone.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                let dx = touch.clientX - cx;
+                let dy = touch.clientY - cy;
+                const dist = Math.min(40, Math.hypot(dx, dy));
+                const ang = Math.atan2(dy, dx);
+
+                handle.style.left = `${32 + Math.cos(ang) * dist}px`;
+                handle.style.top = `${32 + Math.sin(ang) * dist}px`;
+
+                moveX = (Math.cos(ang) * dist) / 40;
+                moveZ = (Math.sin(ang) * dist) / 40;
             }
         }
     </script>
-    <script src="systems.js"></script>
-    <script src="world3d.js"></script>
 </body>
-</html>
+            </html>
