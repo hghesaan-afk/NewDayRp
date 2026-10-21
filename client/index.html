@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>One Day RP</title>
-    <!-- مكتبة الجرافيكس 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; }
@@ -13,54 +12,63 @@
         /* شاشة الدخول والسيرفرات */
         #auth-screen {
             position: absolute; width: 100%; height: 100%; z-index: 1000;
-            background: linear-gradient(rgba(10, 15, 29, 0.85), rgba(10, 15, 29, 0.95)),
+            background: linear-gradient(rgba(10, 15, 29, 0.88), rgba(10, 15, 29, 0.95)),
                         url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1920&auto=format&fit=crop') center/cover;
             display: flex; align-items: center; justify-content: center;
         }
         .auth-card {
-            background: rgba(18, 24, 43, 0.94); border: 1px solid rgba(255, 75, 43, 0.4);
-            border-radius: 24px; width: 92%; max-width: 450px; padding: 25px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            background: rgba(18, 24, 43, 0.95); border: 1px solid rgba(255, 75, 43, 0.4);
+            border-radius: 20px; width: 92%; max-width: 440px; padding: 20px; text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
         }
-        .logo-title { font-size: 28px; font-weight: 900; color: #ff4b2b; letter-spacing: 2px; }
-        .servers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
+        .logo-title { font-size: 26px; font-weight: 900; color: #ff4b2b; letter-spacing: 2px; }
+        .servers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
         .server-btn {
             background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 10px 4px; cursor: pointer; color: #fff; font-size: 13px; font-weight: bold;
+            border-radius: 10px; padding: 8px 4px; cursor: pointer; color: #fff; font-size: 12px; font-weight: bold;
         }
         .server-btn.active { border-color: #ff4b2b; background: rgba(255,75,43,0.25); }
         .auth-input {
-            width: 100%; padding: 13px; margin-bottom: 12px; background: rgba(0,0,0,0.6);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; outline: none; font-size: 14px;
+            width: 100%; padding: 11px; margin-bottom: 10px; background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; outline: none; font-size: 13px;
         }
         .btn-main {
-            width: 100%; padding: 14px; background: linear-gradient(45deg, #ff4b2b, #ff416c);
-            border: none; border-radius: 12px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer;
+            width: 100%; padding: 13px; background: linear-gradient(45deg, #ff4b2b, #ff416c);
+            border: none; border-radius: 10px; color: #fff; font-size: 15px; font-weight: bold; cursor: pointer;
         }
 
         /* واجهة اللعب HUD */
         #game-ui { display: none; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
         
-        /* المنطقة الخضراء والـ HUD العلوي */
         .safezone-badge {
-            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
             background: rgba(16, 185, 129, 0.25); border: 1.5px solid #10b981;
-            padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; color: #10b981;
+            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; color: #10b981;
         }
-        .hud-left { position: absolute; top: 15px; left: 15px; pointer-events: auto; }
-        .minimap {
-            width: 85px; height: 85px; border-radius: 50%; border: 2px solid #fff;
-            background: #111827; display: flex; align-items: center; justify-content: center;
-            font-size: 10px; color: #00ff88; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-        }
-        .hud-right { position: absolute; top: 15px; right: 15px; text-align: right; }
-        .money-text { font-size: 17px; font-weight: 900; }
-        .cash { color: #10b981; }
-        .bank { color: #60a5fa; font-size: 14px; }
 
-        /* الجويستيك وأزرار الأكشن */
+        /* زر مناوبة المالك البارز */
+        .owner-duty-btn {
+            position: absolute; top: 10px; right: 180px; pointer-events: auto;
+            background: linear-gradient(45deg, #d97706, #f59e0b); color: #000;
+            border: 1px solid #fff; border-radius: 20px; padding: 6px 14px;
+            font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+        }
+
+        .hud-left { position: absolute; top: 10px; left: 15px; pointer-events: auto; }
+        .minimap {
+            width: 75px; height: 75px; border-radius: 50%; border: 2px solid #fff;
+            background: #111827; display: flex; align-items: center; justify-content: center;
+            font-size: 9px; color: #00ff88; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+
+        .hud-right { position: absolute; top: 10px; right: 15px; text-align: right; }
+        .money-text { font-size: 15px; font-weight: 900; }
+        .cash { color: #10b981; }
+        .bank { color: #60a5fa; font-size: 13px; }
+
+        /* عصا التحكم باللمس والجويستيك */
         #joystick-zone {
-            position: absolute; bottom: 25px; left: 25px; width: 110px; height: 110px;
+            position: absolute; bottom: 20px; left: 20px; width: 110px; height: 110px;
             background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.25);
             border-radius: 50%; pointer-events: auto; touch-action: none;
         }
@@ -68,53 +76,60 @@
             position: absolute; top: 32px; left: 32px; width: 46px; height: 46px;
             background: radial-gradient(circle, #ff4b2b, #ff416c); border-radius: 50%;
         }
-        .actions-zone { position: absolute; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
+
+        /* أزرار الأكشن */
+        .actions-zone { position: absolute; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
         .action-circle {
-            width: 50px; height: 50px; border-radius: 50%; background: rgba(18, 24, 43, 0.9);
-            border: 1.5px solid rgba(255,255,255,0.3); color: #fff; font-size: 12px; font-weight: bold;
+            width: 48px; height: 48px; border-radius: 50%; background: rgba(18, 24, 43, 0.9);
+            border: 1.5px solid rgba(255,255,255,0.3); color: #fff; font-size: 11px; font-weight: bold;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
 
         /* نافذة الهاتف الذكي OnePhone */
         #phone-modal {
-            position: absolute; bottom: 20px; right: 85px; width: 280px; height: 480px;
-            background: #0f172a; border: 3px solid #334155; border-radius: 30px;
-            padding: 15px; display: none; flex-direction: column; pointer-events: auto; z-index: 500;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            position: absolute; bottom: 20px; right: 80px; width: 260px; height: 380px;
+            background: #0f172a; border: 3px solid #334155; border-radius: 24px;
+            padding: 12px; display: none; flex-direction: column; pointer-events: auto; z-index: 500;
         }
-        .phone-header { text-align: center; font-size: 13px; font-weight: bold; color: #94a3b8; border-bottom: 1px solid #1e293b; padding-bottom: 8px; margin-bottom: 12px; }
-        .phone-apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .phone-header { text-align: center; font-size: 12px; font-weight: bold; color: #94a3b8; border-bottom: 1px solid #1e293b; padding-bottom: 6px; margin-bottom: 10px; }
+        .phone-apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .app-icon {
-            background: #1e293b; border-radius: 14px; padding: 12px 6px; text-align: center;
-            font-size: 11px; font-weight: bold; cursor: pointer; border: 1px solid #334155;
+            background: #1e293b; border-radius: 12px; padding: 10px 4px; text-align: center;
+            font-size: 10px; font-weight: bold; cursor: pointer; border: 1px solid #334155;
         }
 
-        /* قائمة الشرطة (...) */
-        #police-radial {
-            position: absolute; bottom: 90px; right: 90px; background: rgba(18, 24, 43, 0.95);
-            border: 1px solid #ff4b2b; border-radius: 14px; padding: 10px; display: none;
-            flex-direction: column; gap: 6px; pointer-events: auto; width: 170px; z-index: 600;
+        /* زر المايك */
+        .mic-btn {
+            position: absolute; top: 10px; left: 110px; pointer-events: auto;
+            background: rgba(18, 24, 43, 0.85); border: 1.5px solid rgba(255,255,255,0.25);
+            padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer;
         }
-        .radial-item {
-            padding: 8px 10px; background: #0f172a; border-radius: 8px; font-size: 11px;
-            font-weight: bold; cursor: pointer; text-align: center; border: 1px solid #334155;
-        }
+        .mic-active { background: #10b981; border-color: #10b981; }
 
-        /* عداد السجن */
-        #jail-timer-badge {
-            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
-            background: rgba(220, 38, 38, 0.9); border-radius: 15px; padding: 6px 16px;
-            font-size: 12px; font-weight: bold; display: none;
+        /* شاشة توجيه للتدوير بالعرض إذا كان الهاتف واقفاً */
+        #rotate-warning {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0f1d; z-index: 9999; color: #fff; text-align: center;
+            padding-top: 35vh; font-size: 18px; font-weight: bold;
+        }
+        @media screen and (orientation: portrait) {
+            #rotate-warning { display: block; }
         }
     </style>
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول -->
+    <!-- تنبيه لتدوير الهاتف بالعرض للعب بملء الشاشة -->
+    <div id="rotate-warning">
+        🔄 يرجى تدوير شاشة هاتفك بالعرض (Landscape)<br>
+        <span style="font-size: 13px; color: #ff4b2b;">للعب بملء الشاشة وتجربة واقعية كاملة</span>
+    </div>
+
+    <!-- شاشة الدخول -->
     <div id="auth-screen">
         <div class="auth-card">
             <div class="logo-title">ONE DAY RP</div>
-            <p style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">عالم الرول بلاي الحقيقي للموبايل</p>
+            <p style="font-size: 11px; color: #94a3b8; margin-bottom: 8px;">الحياة الواقعية للهواتف</p>
             
             <div class="servers-grid">
                 <div class="server-btn active" onclick="selectServer(this, 'Lomina')">Lomina<br><span style="font-size:9px; color:#10b981;">● 25ms</span></div>
@@ -122,31 +137,27 @@
                 <div class="server-btn" onclick="selectServer(this, 'Fortuna')">Fortuna<br><span style="font-size:9px; color:#10b981;">● 28ms</span></div>
             </div>
 
-            <input type="text" id="player-username" class="auth-input" placeholder="اسم الشخصية (مثال: Ali_Karim)" value="Ali_Karim">
+            <input type="text" id="player-username" class="auth-input" placeholder="اسم الشخصية (مثال: Owner_Hghesaan)" value="Owner_Hghesaan">
             <input type="password" class="auth-input" placeholder="كلمة المرور" value="12345678">
 
-            <button class="btn-main" onclick="enterGameWorld()">دخول السيرفر والانطلاق 🚀</button>
+            <button class="btn-main" onclick="enterGameFullscreen()">دخول السيرفر واللعب بالعرض 🚀</button>
         </div>
     </div>
 
-    <!-- واجهة اللعبة داخل السيرفر -->
+    <!-- واجهة اللعب HUD -->
     <div id="game-ui">
-        <div class="safezone-badge">🛡️ منطقة آمنة (Green Zone) - القتل ممنوع</div>
-        <div id="jail-timer-badge">🚨 متبقي في السجن: <span id="jail-count">15:00</span> دقيقة</div>
+        <div class="safezone-badge">🛡️ منطقة آمنة (Green Zone)</div>
+        <button class="owner-duty-btn" onclick="toggleAdminDuty()">👑 مناوبة المالك</button>
+        <button class="mic-btn" id="hud-mic-btn" onclick="toggleRealMic()">🎙️ مايك: مغلق</button>
 
-        <!-- الخريطة -->
-        <div class="hud-left">
-            <div class="minimap">خريطة المدينة<br>GPS</div>
-        </div>
+        <div class="hud-left"><div class="minimap">خريطة المدينة<br>GPS</div></div>
 
-        <!-- رصيد الكاش والبنك -->
         <div class="hud-right">
             <div class="money-text cash" id="hud-cash">1,000 $</div>
             <div class="money-text bank" id="hud-bank">5,000 $ (بنك)</div>
-            <div style="font-size: 11px; color: #94a3b8;" id="hud-server-tag">ID: #101 • Lomina</div>
+            <div style="font-size: 10px; color: #94a3b8;" id="hud-server-tag">ID: #1 • Lomina</div>
         </div>
 
-        <!-- أزرار الأكشن والتحكم -->
         <div id="joystick-zone"><div id="joystick-handle"></div></div>
         
         <div class="actions-zone">
@@ -156,17 +167,9 @@
             <div class="action-circle" onclick="togglePoliceMenu()">•••</div>
         </div>
 
-        <!-- قائمة تفاعل الشرطة (...) -->
-        <div id="police-radial">
-            <div class="radial-item" onclick="policeAction('طلب مستندات ورخصة')">🪪 طلب مستندات</div>
-            <div class="radial-item" onclick="policeAction('تسجيل مخالفة مرورية')">📝 تسجيل مخالفة</div>
-            <div class="radial-item" onclick="policeAction('تقييد اليدين (كلبشات)')">⛓️ تقييد (Cuff)</div>
-            <div class="radial-item" onclick="policeAction('إرسال إلى السجن')">🚔 إدخال السجن</div>
-        </div>
-
-        <!-- هاتف OnePhone الذكي -->
+        <!-- هاتف OnePhone -->
         <div id="phone-modal">
-            <div class="phone-header">OnePhone OS • v2.0</div>
+            <div class="phone-header">OnePhone OS</div>
             <div class="phone-apps">
                 <div class="app-icon" onclick="phoneApp('البنك')">🏦<br>البنك</div>
                 <div class="app-icon" onclick="phoneApp('الكراج')">🚗<br>سياراتي</div>
@@ -178,8 +181,40 @@
         </div>
     </div>
 
-    <!-- ربط ملفات الأنظمة والعالم 3D -->
+    <script>
+        // تفعيل ملء الشاشة بالعرض
+        function enterGameFullscreen() {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+            }
+            enterGameWorld();
+        }
+
+        // تشغيل المايك الحقيقي من الهاتف
+        let micStream = null;
+        async function toggleRealMic() {
+            const btn = document.getElementById('hud-mic-btn');
+            if (!micStream) {
+                try {
+                    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    btn.classList.add('mic-active');
+                    btn.innerText = "🎙️ المايك: متصل 🟢";
+                    alert("🎙️ [المايك الحقيقي]: تم تفعيل الميكروفون بنجاح! صوتك مسموع الآن في السيرفر.");
+                } catch (e) {
+                    alert("❌ يرجى منح إذن استخدام الميكروفون من إعدادات المتصفح!");
+                }
+            } else {
+                micStream.getTracks().forEach(t => t.stop());
+                micStream = null;
+                btn.classList.remove('mic-active');
+                btn.innerText = "🎙️ مايك: مغلق";
+            }
+        }
+    </script>
     <script src="systems.js"></script>
     <script src="world3d.js"></script>
 </body>
-    </html>
+</html>
